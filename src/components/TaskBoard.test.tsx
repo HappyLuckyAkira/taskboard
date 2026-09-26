@@ -8,11 +8,12 @@ import { TaskBoard } from "./TaskBoard";
 const column = (name: string) => screen.getByRole("region", { name });
 
 describe("TaskBoard", () => {
-  it("未着手・進行中・完了の3列と「カラムを追加」枠を表示する", () => {
+  it("未着手・進行中・保留・完了の4列をこの順に表示し、「カラムを追加」枠も表示する", () => {
     render(<TaskBoard />);
-    for (const name of ["未着手", "進行中", "完了"]) {
-      expect(column(name)).toBeInTheDocument();
-    }
+    const names = screen
+      .getAllByRole("region")
+      .map((region) => within(region).getByRole("heading").textContent);
+    expect(names).toEqual(["未着手", "進行中", "保留", "完了"]);
     expect(screen.getByText("カラムを追加")).toBeInTheDocument();
   });
 
@@ -90,6 +91,26 @@ describe("TaskBoard", () => {
     expect(within(column("未着手")).queryAllByRole("article")).toHaveLength(0);
     expect(
       within(column("完了")).getByRole("article", { name: "移動するタスク" }),
+    ).toBeInTheDocument();
+  });
+
+  it("ドラッグ＆ドロップでタスクを保留列へ移動できる", () => {
+    const initialTasks: Task[] = [
+      { id: "1", title: "止めるタスク", description: "", status: "in-progress" },
+    ];
+    render(<TaskBoard initialTasks={initialTasks} />);
+
+    const card = within(column("進行中")).getByRole("article", {
+      name: "止めるタスク",
+    });
+    const dataTransfer = createDataTransfer();
+    fireEvent.dragStart(card, { dataTransfer });
+    fireEvent.dragOver(column("保留"), { dataTransfer });
+    fireEvent.drop(column("保留"), { dataTransfer });
+
+    expect(within(column("進行中")).queryAllByRole("article")).toHaveLength(0);
+    expect(
+      within(column("保留")).getByRole("article", { name: "止めるタスク" }),
     ).toBeInTheDocument();
   });
 });

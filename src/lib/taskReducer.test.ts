@@ -33,6 +33,17 @@ describe("taskReducer", () => {
       expect(task.status).toBe("in-progress");
     });
 
+    it("保留の列に追加できる", () => {
+      const [task] = taskReducer([], {
+        type: "add",
+        id: "x",
+        title: "T",
+        description: "",
+        status: "on-hold",
+      });
+      expect(task.status).toBe("on-hold");
+    });
+
     it("タイトルと説明の前後の空白を取り除く", () => {
       const [task] = taskReducer([], {
         type: "add",
@@ -71,6 +82,15 @@ describe("taskReducer", () => {
       });
       expect(result.find((t) => t.id === "1")?.status).toBe("done");
       expect(result).toHaveLength(3);
+    });
+
+    it("保留へ移動できる", () => {
+      const result = taskReducer(sample, {
+        type: "move",
+        id: "2",
+        status: "on-hold",
+      });
+      expect(tasksByStatus(result, "on-hold").map((t) => t.id)).toEqual(["2"]);
     });
 
     it("移動したタスクは移動先の列の末尾に並ぶ", () => {

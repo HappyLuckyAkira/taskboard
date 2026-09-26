@@ -27,7 +27,7 @@ export function TaskBoard({ initialTasks }: Props) {
         taskCount={tasks.length}
         onNewTask={() => setAddingTo("todo")}
       />
-      <div className="grid flex-1 grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-4">
+      <div className="grid flex-1 grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
         {COLUMNS.map((column) => (
           <BoardColumn
             key={column.status}
