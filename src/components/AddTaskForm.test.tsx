@@ -50,6 +50,6 @@ describe("AddTaskForm", () => {
 
     await user.type(screen.getByLabelText("タイトル"), "タスク{Enter}");
 
-    expect(onAdd).toHaveBeenCalledWith("タスク", "");
+    expect(onAdd).toHaveBeenCalledExactlyOnceWith("タスク", "");
   });
 });

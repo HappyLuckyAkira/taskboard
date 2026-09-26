@@ -20,10 +20,11 @@ describe("TaskCard", () => {
   });
 
   it("説明が空なら説明欄を描画しない", () => {
-    const { container } = render(
-      <TaskCard task={{ ...task, description: "" }} />,
+    render(<TaskCard task={{ ...task, description: "" }} />);
+    // カードの中身がタイトルだけであること
+    expect(screen.getByRole("article", { name: "設計" })).toHaveTextContent(
+      /^設計$/,
     );
-    expect(container.querySelector("p")).toBeNull();
   });
 
   it("ドラッグ可能で、ドラッグ開始時にタスク ID を渡す", () => {
