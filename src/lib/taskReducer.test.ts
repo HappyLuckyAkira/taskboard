@@ -22,6 +22,17 @@ describe("taskReducer", () => {
       ]);
     });
 
+    it("status を指定するとその列に追加する", () => {
+      const [task] = taskReducer([], {
+        type: "add",
+        id: "x",
+        title: "T",
+        description: "",
+        status: "in-progress",
+      });
+      expect(task.status).toBe("in-progress");
+    });
+
     it("タイトルと説明の前後の空白を取り除く", () => {
       const [task] = taskReducer([], {
         type: "add",

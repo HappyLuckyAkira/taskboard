@@ -19,13 +19,11 @@ export function TaskCard({ task }: Props) {
       draggable
       onDragStart={handleDragStart}
       aria-label={task.title}
-      className="cursor-grab rounded-lg border border-zinc-200 bg-white p-3 shadow-sm transition hover:shadow-md active:cursor-grabbing dark:border-zinc-700 dark:bg-zinc-800"
+      className="cursor-grab rounded-lg bg-card px-4 py-3.5 shadow-[0_1px_2px_rgba(0,0,0,0.04)] transition-shadow hover:shadow-md active:cursor-grabbing"
     >
-      <h3 className="font-medium text-zinc-900 dark:text-zinc-100">
-        {task.title}
-      </h3>
+      <h3 className="text-sm font-semibold leading-snug">{task.title}</h3>
       {task.description && (
-        <p className="mt-1 whitespace-pre-wrap text-sm text-zinc-600 dark:text-zinc-400">
+        <p className="mt-2 whitespace-pre-wrap text-xs leading-relaxed text-muted">
           {task.description}
         </p>
       )}

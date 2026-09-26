@@ -1,7 +1,13 @@
 import type { Task, TaskStatus } from "@/types/task";
 
 export type TaskAction =
-  | { type: "add"; id: string; title: string; description: string }
+  | {
+      type: "add";
+      id: string;
+      title: string;
+      description: string;
+      status?: TaskStatus;
+    }
   | { type: "move"; id: string; status: TaskStatus };
 
 /**
@@ -19,7 +25,7 @@ export function taskReducer(tasks: Task[], action: TaskAction): Task[] {
           id: action.id,
           title,
           description: action.description.trim(),
-          status: "todo",
+          status: action.status ?? "todo",
         },
       ];
     }

@@ -7,9 +7,18 @@ import type { Task, TaskStatus } from "@/types/task";
 export function useTasks(initialTasks: Task[] = []) {
   const [tasks, dispatch] = useReducer(taskReducer, initialTasks);
 
-  const addTask = useCallback((title: string, description: string) => {
-    dispatch({ type: "add", id: crypto.randomUUID(), title, description });
-  }, []);
+  const addTask = useCallback(
+    (title: string, description: string, status?: TaskStatus) => {
+      dispatch({
+        type: "add",
+        id: crypto.randomUUID(),
+        title,
+        description,
+        status,
+      });
+    },
+    [],
+  );
 
   const moveTask = useCallback((id: string, status: TaskStatus) => {
     dispatch({ type: "move", id, status });

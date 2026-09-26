@@ -32,7 +32,18 @@ describe("AddTaskForm", () => {
     expect(button).toBeEnabled();
   });
 
-  it("Enter キーでも送信できる", async () => {
+  it("onCancel を渡すとキャンセルボタンを表示し、押すと呼ばれる", async () => {
+    const user = userEvent.setup();
+    const onCancel = vi.fn();
+    const { rerender } = render(<AddTaskForm onAdd={vi.fn()} />);
+    expect(screen.queryByRole("button", { name: "キャンセル" })).toBeNull();
+
+    rerender(<AddTaskForm onAdd={vi.fn()} onCancel={onCancel} />);
+    await user.click(screen.getByRole("button", { name: "キャンセル" }));
+    expect(onCancel).toHaveBeenCalledOnce();
+  });
+
+  it("タイトル欄で Enter キーを押しても送信できる", async () => {
     const user = userEvent.setup();
     const onAdd = vi.fn();
     render(<AddTaskForm onAdd={onAdd} />);
