@@ -16,6 +16,8 @@
   --priority-low: #3d6b4a;
   --priority-low-bg: #e4f1e8;
   --danger: #b42318;
+  --warning: #854d0e;
+  --warning-bg: #fef3c7;
 }
 
 @theme inline {
@@ -34,6 +36,8 @@
   --color-priority-low: var(--priority-low);
   --color-priority-low-bg: var(--priority-low-bg);
   --color-danger: var(--danger);
+  --color-warning: var(--warning);
+  --color-warning-bg: var(--warning-bg);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
@@ -55,6 +59,8 @@
     --priority-low: #8fcca0;
     --priority-low-bg: #1a3022;
     --danger: #ff9b8f;
+    --warning: #fcd34d;
+    --warning-bg: #3a2e0b;
   }
 }
 

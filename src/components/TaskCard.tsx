@@ -1,7 +1,12 @@
 "use client";
 
 import { useId, type DragEvent } from "react";
-import { formatDueDate, isOverdue, toDateKey } from "@/lib/dueDate";
+import {
+  dueSoonLabel,
+  formatDueDate,
+  isOverdue,
+  toDateKey,
+} from "@/lib/dueDate";
 import { TASK_DRAG_TYPE } from "@/lib/dragData";
 import { PRIORITIES, type Priority, type Task } from "@/types/task";
 
@@ -18,7 +23,9 @@ const PRIORITY_BADGE: Record<Priority, string> = {
 export function TaskCard({ task }: Props) {
   const descriptionId = useId();
   const priorityLabel = PRIORITIES.find((p) => p.value === task.priority)?.label;
-  const overdue = isOverdue(task.dueDate, toDateKey(new Date()), task.status);
+  const today = toDateKey(new Date());
+  const overdue = isOverdue(task.dueDate, today, task.status);
+  const dueSoon = dueSoonLabel(task.dueDate, today, task.status);
 
   const handleDragStart = (e: DragEvent<HTMLElement>) => {
     e.dataTransfer.setData(TASK_DRAG_TYPE, task.id);
@@ -64,6 +71,11 @@ export function TaskCard({ task }: Props) {
               <time dateTime={task.dueDate}>{formatDueDate(task.dueDate)}</time>
             </dd>
             {overdue && <dd className="font-medium">期限切れ</dd>}
+            {dueSoon && (
+              <dd className="rounded bg-warning-bg px-1.5 py-0.5 font-medium text-warning">
+                {dueSoon}
+              </dd>
+            )}
           </div>
         )}
       </dl>

@@ -58,6 +58,24 @@ describe("TaskCard", () => {
     expect(within(card()).getByText("期限切れ")).toBeInTheDocument();
   });
 
+  it("期限まで 3 日以内なら「期限間近」として残り日数を表示する", () => {
+    render(<TaskCard task={{ ...task, dueDate: "2026-10-11" }} />);
+    const c = within(card());
+    expect(c.getByText("明日まで")).toBeInTheDocument();
+    expect(c.queryByText("期限切れ")).toBeNull();
+  });
+
+  it("期限まで 4 日以上ある、または期限切れなら「期限間近」は出さない", () => {
+    const { unmount } = render(
+      <TaskCard task={{ ...task, dueDate: "2026-10-14" }} />,
+    );
+    expect(within(card()).queryByText(/まで$|^あと\d+日$/)).toBeNull();
+    unmount();
+
+    render(<TaskCard task={{ ...task, dueDate: "2026-10-09" }} />);
+    expect(within(card()).queryByText(/まで$|^あと\d+日$/)).toBeNull();
+  });
+
   it("完了したタスクは期限を過ぎても「期限切れ」にしない", () => {
     render(
       <TaskCard task={{ ...task, dueDate: "2026-10-09", status: "done" }} />,
