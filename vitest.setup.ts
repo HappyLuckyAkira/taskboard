@@ -4,4 +4,6 @@ import { afterEach } from "vitest";
 
 afterEach(() => {
   cleanup();
+  // タスクは localStorage に保存されるので、テスト間で持ち越さない
+  localStorage.clear();
 });

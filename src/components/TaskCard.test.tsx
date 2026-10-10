@@ -1,39 +1,76 @@
-import { fireEvent, render, screen } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { fireEvent, render, screen, within } from "@testing-library/react";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { TASK_DRAG_TYPE } from "@/lib/dragData";
 import { createDataTransfer } from "@/test/dataTransfer";
-import type { Task } from "@/types/task";
+import { makeTask } from "@/test/factories";
 import { TaskCard } from "./TaskCard";
 
-const task: Task = {
+const task = makeTask({
   id: "t1",
   title: "設計",
   description: "画面設計を行う",
-  status: "todo",
-};
+  assignee: "佐藤",
+  priority: "high",
+  dueDate: "2026-10-20",
+});
+
+const card = (name = "設計") => screen.getByRole("article", { name });
 
 describe("TaskCard", () => {
+  beforeEach(() => {
+    // Date だけを固定する（フェイクタイマーは使わない）
+    vi.setSystemTime(new Date(2026, 9, 10, 12, 0));
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
   it("タイトルと説明を表示する", () => {
     render(<TaskCard task={task} />);
     expect(screen.getByRole("heading", { name: "設計" })).toBeInTheDocument();
-    expect(screen.getByText("画面設計を行う")).toBeInTheDocument();
+    expect(card()).toHaveAccessibleDescription("画面設計を行う");
   });
 
   it("説明が空なら説明欄を描画しない", () => {
     render(<TaskCard task={{ ...task, description: "" }} />);
-    // カードの中身がタイトルだけであること
-    expect(screen.getByRole("article", { name: "設計" })).toHaveTextContent(
-      /^設計$/,
+    expect(card()).toHaveAccessibleDescription("");
+  });
+
+  it("優先度・担当者・期限を表示する", () => {
+    render(<TaskCard task={task} />);
+    const c = within(card());
+    expect(c.getByText("高")).toBeInTheDocument();
+    expect(c.getByText("佐藤")).toBeInTheDocument();
+    expect(c.getByText("10/20")).toBeInTheDocument();
+    expect(c.queryByText("期限切れ")).toBeNull();
+  });
+
+  it("担当者が空なら「未割り当て」、期限が空なら期限を表示しない", () => {
+    render(<TaskCard task={{ ...task, assignee: "", dueDate: "" }} />);
+    const c = within(card());
+    expect(c.getByText("未割り当て")).toBeInTheDocument();
+    expect(c.queryByText("期限")).toBeNull();
+  });
+
+  it("期限を過ぎた未完了のタスクは「期限切れ」と表示する", () => {
+    render(<TaskCard task={{ ...task, dueDate: "2026-10-09" }} />);
+    expect(within(card()).getByText("期限切れ")).toBeInTheDocument();
+  });
+
+  it("完了したタスクは期限を過ぎても「期限切れ」にしない", () => {
+    render(
+      <TaskCard task={{ ...task, dueDate: "2026-10-09", status: "done" }} />,
     );
+    expect(within(card()).queryByText("期限切れ")).toBeNull();
   });
 
   it("ドラッグ可能で、ドラッグ開始時にタスク ID を渡す", () => {
     render(<TaskCard task={task} />);
-    const card = screen.getByRole("article", { name: "設計" });
     const dataTransfer = createDataTransfer();
 
-    expect(card).toHaveAttribute("draggable", "true");
-    fireEvent.dragStart(card, { dataTransfer });
+    expect(card()).toHaveAttribute("draggable", "true");
+    fireEvent.dragStart(card(), { dataTransfer });
 
     expect(dataTransfer.getData(TASK_DRAG_TYPE)).toBe("t1");
     expect(dataTransfer.effectAllowed).toBe("move");

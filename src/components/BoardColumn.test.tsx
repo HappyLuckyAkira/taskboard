@@ -3,13 +3,14 @@ import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 import { TASK_DRAG_TYPE } from "@/lib/dragData";
 import { createDataTransfer } from "@/test/dataTransfer";
+import { makeTask } from "@/test/factories";
 import type { Column, Task } from "@/types/task";
 import { BoardColumn } from "./BoardColumn";
 
 const column: Column = { status: "in-progress", label: "進行中" };
 const tasks: Task[] = [
-  { id: "a", title: "A", description: "", status: "in-progress" },
-  { id: "b", title: "B", description: "", status: "in-progress" },
+  makeTask({ id: "a", title: "A", status: "in-progress" }),
+  makeTask({ id: "b", title: "B", status: "in-progress" }),
 ];
 
 describe("BoardColumn", () => {

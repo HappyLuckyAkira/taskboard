@@ -1,4 +1,9 @@
-import type { Task, TaskStatus } from "@/types/task";
+import {
+  DEFAULT_PRIORITY,
+  type Priority,
+  type Task,
+  type TaskStatus,
+} from "@/types/task";
 
 export type TaskAction =
   | {
@@ -7,6 +12,9 @@ export type TaskAction =
       title: string;
       description: string;
       status?: TaskStatus;
+      assignee?: string;
+      priority?: Priority;
+      dueDate?: string;
     }
   | { type: "move"; id: string; status: TaskStatus };
 
@@ -26,6 +34,9 @@ export function taskReducer(tasks: Task[], action: TaskAction): Task[] {
           title,
           description: action.description.trim(),
           status: action.status ?? "todo",
+          assignee: (action.assignee ?? "").trim(),
+          priority: action.priority ?? DEFAULT_PRIORITY,
+          dueDate: action.dueDate ?? "",
         },
       ];
     }

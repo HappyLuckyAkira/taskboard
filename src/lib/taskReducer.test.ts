@@ -1,16 +1,17 @@
 import { describe, expect, it } from "vitest";
+import { makeTask } from "@/test/factories";
 import type { Task } from "@/types/task";
 import { taskReducer, tasksByStatus } from "./taskReducer";
 
 const sample: Task[] = [
-  { id: "1", title: "A", description: "", status: "todo" },
-  { id: "2", title: "B", description: "", status: "in-progress" },
-  { id: "3", title: "C", description: "", status: "todo" },
+  makeTask({ id: "1", title: "A", status: "todo" }),
+  makeTask({ id: "2", title: "B", status: "in-progress" }),
+  makeTask({ id: "3", title: "C", status: "todo" }),
 ];
 
 describe("taskReducer", () => {
   describe("add", () => {
-    it("未着手としてタスクを末尾に追加する", () => {
+    it("未着手としてタスクを末尾に追加し、未指定の項目は既定値にする", () => {
       const result = taskReducer([], {
         type: "add",
         id: "x",
@@ -18,8 +19,33 @@ describe("taskReducer", () => {
         description: "牛乳",
       });
       expect(result).toEqual([
-        { id: "x", title: "買い物", description: "牛乳", status: "todo" },
+        {
+          id: "x",
+          title: "買い物",
+          description: "牛乳",
+          status: "todo",
+          assignee: "",
+          priority: "medium",
+          dueDate: "",
+        },
       ]);
+    });
+
+    it("担当者・優先度・期限を指定して追加できる", () => {
+      const [task] = taskReducer([], {
+        type: "add",
+        id: "x",
+        title: "T",
+        description: "",
+        assignee: "佐藤",
+        priority: "high",
+        dueDate: "2026-10-20",
+      });
+      expect(task).toMatchObject({
+        assignee: "佐藤",
+        priority: "high",
+        dueDate: "2026-10-20",
+      });
     });
 
     it("status を指定するとその列に追加する", () => {
@@ -44,15 +70,17 @@ describe("taskReducer", () => {
       expect(task.status).toBe("on-hold");
     });
 
-    it("タイトルと説明の前後の空白を取り除く", () => {
+    it("タイトル・説明・担当者の前後の空白を取り除く", () => {
       const [task] = taskReducer([], {
         type: "add",
         id: "x",
         title: "  買い物 ",
         description: " 牛乳  ",
+        assignee: "  佐藤 ",
       });
       expect(task.title).toBe("買い物");
       expect(task.description).toBe("牛乳");
+      expect(task.assignee).toBe("佐藤");
     });
 
     it("タイトルが空白のみなら追加しない", () => {

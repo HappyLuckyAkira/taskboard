@@ -1,15 +1,22 @@
 "use client";
 
 import { useEffect } from "react";
+import type { NewTaskInput } from "@/types/task";
 import { AddTaskForm } from "./AddTaskForm";
 
 type Props = {
   columnLabel: string;
-  onAdd: (title: string, description: string) => void;
+  assigneeOptions: readonly string[];
+  onAdd: (input: NewTaskInput) => void;
   onClose: () => void;
 };
 
-export function AddTaskDialog({ columnLabel, onAdd, onClose }: Props) {
+export function AddTaskDialog({
+  columnLabel,
+  assigneeOptions,
+  onAdd,
+  onClose,
+}: Props) {
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
@@ -30,7 +37,7 @@ export function AddTaskDialog({ columnLabel, onAdd, onClose }: Props) {
         role="dialog"
         aria-modal="true"
         aria-labelledby="add-task-title"
-        className="w-full max-w-md rounded-2xl bg-card p-6 shadow-xl"
+        className="w-full max-w-lg rounded-2xl bg-card p-6 shadow-xl"
       >
         <h2 id="add-task-title" className="text-lg font-semibold">
           新規タスク
@@ -39,8 +46,9 @@ export function AddTaskDialog({ columnLabel, onAdd, onClose }: Props) {
           追加先: {columnLabel}
         </p>
         <AddTaskForm
-          onAdd={(title, description) => {
-            onAdd(title, description);
+          assigneeOptions={assigneeOptions}
+          onAdd={(input) => {
+            onAdd(input);
             onClose();
           }}
           onCancel={onClose}
